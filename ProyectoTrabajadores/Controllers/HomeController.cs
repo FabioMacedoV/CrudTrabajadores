@@ -9,33 +9,33 @@ namespace ProyectoTrabajadores.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly TrabajadoresPruebaContext _DbContext;
+        private readonly TrabajadoresPruebaContext _context;
         private const int FilasPorPagina = 10;
 
         public HomeController(TrabajadoresPruebaContext context)
         {
-            _DbContext = context;
+            _context = context;
         }
 
-        public async Task<IActionResult> Index(string nombre, string sexo, string dni, int page = 1)
+        public async Task<IActionResult> Index(string nombre, string sexo, string doc, int page = 1)
         {
-            var (lista, totalPaginas) = await ObtenerTrabajadoresFiltrados(nombre, sexo, dni, page);
+            var (lista, totalPaginas) = await ObtenerTrabajadoresFiltrados(nombre, sexo, doc, page);
 
             ViewBag.FiltroNombre = nombre;
             ViewBag.FiltroSexo = sexo;
-            ViewBag.filtroDoc = dni;
+            ViewBag.filtroDoc = doc;
             ViewBag.TotalPaginas = totalPaginas;
             ViewBag.PaginaActual = page;
 
             return View(lista);
         }
 
-        private async Task<(List<TrabajadorResponse> lista, long totalPaginas)> ObtenerTrabajadoresFiltrados(string nombre, string sexo, string dni, int page)
+        private async Task<(List<TrabajadorResponse> lista, long totalPaginas)> ObtenerTrabajadoresFiltrados(string nombre, string sexo, string doc, int page)
         {
-            var lista = await _DbContext.ObtenerTrabajadoresSPAsync(
+            var lista = await _context.ObtenerTrabajadores(
                 nombres: nombre ?? "",
                 sexo: sexo ?? "",
-                numDocumento: dni ?? "",
+                numDocumento: doc ?? "",
                 rows: FilasPorPagina,
                 page: page
             );

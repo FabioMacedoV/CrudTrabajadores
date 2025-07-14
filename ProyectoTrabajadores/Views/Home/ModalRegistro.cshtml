@@ -1,72 +1,66 @@
-﻿@{
-
-}
-
-<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+﻿<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="formTrabajador">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalRegistroLabel"><i class="fa fa-user-plus"></i> Nuevo Registro</h5>
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="hdnIdTrabajador" value="" />
-                    <!-- Campos del formulario -->
-                    <div class="col p-3">
-                        <div class="row">
-                            <label>Tipo de Documento</label>
-                            <select class="form-control" id="txtTipoDoc" required>
-                                <option value="" selected>-- Seleccione --</option>
-                                <option value="10001">DNI</option>
-                                <option value="10002">CE</option>
-                            </select>
-                        </div>
-                        <div class="row">
-                            <label>Número de Documento</label>
-                            <input type="text" class="form-control" id="txtNumeroDoc" required />
-                        </div>
-
-                        <div class="row">
-                            <label>Nombres</label>
-                            <input type="text" class="form-control" id="txtNombres" required />
-                        </div>
-                        <div class="form-group">
-                            <label class="d-block">Sexo</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="sexo" id="sexoM" value="M">
-                                <label class="form-check-label" for="sexoM">Masculino</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="sexo" id="sexoF" value="F">
-                                <label class="form-check-label" for="sexoF">Femenino</label>
-                            </div>
-                        </div>
-
-                        <div class="row mb-2">
-                            <label>Departamento</label>
-                            <select class="form-control" id="txtDepartamento" required></select>
-                        </div>
-                        <div class="row mb-2">
-                            <label>Provincia</label>
-                            <select class="form-control" id="txtProvincia" disabled required></select>
-                        </div>
-                        <div class="row mb-2">
-                            <label>Distrito</label>
-                            <select class="form-control" id="txtDistrito" disabled required></select>
-                        </div>
-
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRegistroLabel"><i class="fa fa-user-plus"></i> Nuevo Registro</h5>
+                <button type="button" class="btn btn-light btnCerrarModal" data-dismiss="modal"><i class="fa fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                @* Campo  oculto para el id del trabajador*@
+                <input type="hidden" id="hdnIdTrabajador" value="" />
+                <div class="col p-3">
+                    <div class="row">
+                        <label>Tipo de Documento</label>
+                        <select class="form-control" id="txtTipoDoc" required>
+                            <option value="" selected>-- Seleccione --</option>
+                            <option value="10001">DNI</option>
+                            <option value="10002">CE</option>
+                        </select>
                     </div>
+                    <div class="row">
+                        <label>Número de Documento</label>
+                        <input type="text" onkeypress="soloNumeros(event)" class="form-control" id="txtNumeroDoc" maxlength="12" required />
+                    </div>
+
+                    <div class="row">
+                        <label>Nombres</label>
+                        <input type="text" onkeypress="soloLetras(event)" class="form-control" id="txtNombres" maxlength="500" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="d-block">Sexo</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sexo" id="sexoM" value="M">
+                            <label class="form-check-label" for="sexoM">Masculino</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sexo" id="sexoF" value="F">
+                            <label class="form-check-label" for="sexoF">Femenino</label>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <label>Departamento</label>
+                        <select class="form-control" id="txtDepartamento" required></select>
+                    </div>
+                    <div class="row mb-2">
+                        <label>Provincia</label>
+                        <select class="form-control" id="txtProvincia" disabled required></select>
+                    </div>
+                    <div class="row mb-2">
+                        <label>Distrito</label>
+                        <select class="form-control" id="txtDistrito" disabled required></select>
+                    </div>
+
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="btnGuardar">
-                        <i class="fa fa-save"></i> Guardar
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="btnCerrarModal">
-                        <i class="fa fa-ban"></i> Cancelar
-                    </button>
-                </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnGuardar">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+                <button type="button" class="btn btn-secondary btnCerrarModal">
+                    <i class="fa fa-ban"></i> Cancelar
+                </button>
+            </div>
         </div>
     </div>
 </div>

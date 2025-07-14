@@ -21,7 +21,7 @@ namespace ProyectoTrabajadores.Controllers
         [HttpGet("listar")]
         public async Task<IActionResult> Listar(string? nombre, string? sexo, string? dni, int page = 1)
         {
-            var lista = await _context.ObtenerTrabajadoresSPAsync(
+            var lista = await _context.ObtenerTrabajadores(
                 nombres: nombre ?? "",
                 sexo: sexo ?? "",
                 numDocumento: dni ?? "",
@@ -70,7 +70,7 @@ namespace ProyectoTrabajadores.Controllers
         {
             try
             {
-                await _context.EjecutarSP_AddUpdTrabajadorAsync(modelo);
+                await _context.AddUpdTrabajador(modelo);
                 return Ok(new { mensaje = "Guardado correctamente" });
             }
             catch (Exception ex)
@@ -84,7 +84,7 @@ namespace ProyectoTrabajadores.Controllers
         {
             try
             {
-                await _context.EliminarTrabajadorAsync(id);
+                await _context.EliminarTrabajador(id);
                 return Ok(new { mensaje = "Trabajador eliminado correctamente" });
             }
             catch (Exception ex)

@@ -123,36 +123,62 @@ public partial class TrabajadoresPruebaContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    public async Task<List<TrabajadorResponse>> ObtenerTrabajadoresSPAsync(string nombres, string sexo, string numDocumento, int rows, int page)
-    {   
-        var pNombres = new SqlParameter("@Nombres", nombres ?? "");
-        var pSexo = new SqlParameter("@sexo", sexo ?? "");
-        var pNumDoc = new SqlParameter("@NumDocumento", numDocumento ?? "");
-        var pRows = new SqlParameter("@rows", rows);
-        var pPage = new SqlParameter("@page", page);
+    public async Task<List<TrabajadorResponse>> ObtenerTrabajadores(string nombres, string sexo, string numDocumento, int rows, int page)
+    {
+        try
+        {
+            var pNombres = new SqlParameter("@Nombres", nombres ?? "");
+            var pSexo = new SqlParameter("@sexo", sexo ?? "");
+            var pNumDoc = new SqlParameter("@NumDocumento", numDocumento ?? "");
+            var pRows = new SqlParameter("@rows", rows);
+            var pPage = new SqlParameter("@page", page);
 
-        return await this.Set<TrabajadorResponse>()
-            .FromSqlRaw("EXEC SP_ObtenerTrabajadores @Nombres, @sexo, @NumDocumento, @rows, @page",
-                pNombres, pSexo, pNumDoc, pRows, pPage)
-            .ToListAsync();
+            var resp = await this.Set<TrabajadorResponse>()
+                .FromSqlRaw("EXEC SP_ObtenerTrabajadores @Nombres, @sexo, @NumDocumento, @rows, @page",
+                    pNombres, pSexo, pNumDoc, pRows, pPage)
+                .ToListAsync();
+
+            return resp;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] ObtenerTrabajadores: {ex.Message}");
+            throw;
+        }
     }
 
-    public async Task EjecutarSP_AddUpdTrabajadorAsync(Trabajadores t)
+    public async Task AddUpdTrabajador(Trabajadores t)
     {
-        await Database.ExecuteSqlRawAsync("EXEC SP_AddUpdTrabajador @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7",
-            t.Id,
-            t.TipoDocumento,
-            t.NumeroDocumento,
-            t.Nombres,
-            t.Sexo,
-            t.IdDepartamento,
-            t.IdProvincia,
-            t.IdDistrito
-        );
+        try
+        {
+            await Database.ExecuteSqlRawAsync("EXEC SP_AddUpdTrabajador @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7",
+                t.Id,
+                t.TipoDocumento,
+                t.NumeroDocumento,
+                t.Nombres,
+                t.Sexo,
+                t.IdDepartamento,
+                t.IdProvincia,
+                t.IdDistrito
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] EjecutarSP_AddUpdTrabajadorAsync: {ex.Message}");
+            throw;
+        }
     }
 
-    public async Task EliminarTrabajadorAsync(int id)
+    public async Task EliminarTrabajador(int id)
     {
-        await Database.ExecuteSqlRawAsync("EXEC SP_EliminarTrabajador @p0", id);
+        try
+        {
+            await Database.ExecuteSqlRawAsync("EXEC SP_EliminarTrabajador @p0", id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] EliminarTrabajadorAsync: {ex.Message}");
+            throw;
+        }
     }
 }

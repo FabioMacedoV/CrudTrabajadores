@@ -3,50 +3,7 @@ window.onload = function () {
     cargarTrabajadores();
 }
 
-$("#btnRegistrar").on("click", function () {
-    $('#hdnIdTrabajador').val("");
-    limpiarModalRegistro();
-    cargarDepartamentos();
-    $('#modalRegistro').modal('show');
-});
-
-$("#btnBuscar").on("click", function () {
-    cargarTrabajadores(1);
-});
-
-$("#btnLimpiar").on("click", function () {
-    limpiarFiltro();
-});
-
-$(document).on("click", ".btnEditar", function () {
-    const id = $(this).data("id");
-
-    $.ajax({
-        url: `/api/trabajadorapi/obtener/${id}`,
-        type: "GET",
-        success: function (trabajador) {
-            limpiarModalRegistro();
-
-            $('#txtNombres').val(trabajador.nombres);
-            $('#txtNumeroDoc').val(trabajador.numeroDocumento);
-            $('#txtTipoDoc').val(trabajador.tipoDocumento);
-            $('input[name="sexo"][value="' + trabajador.sexo + '"]').prop("checked", true);
-            $('#hdnIdTrabajador').val(trabajador.id);
-
-            $('#modalRegistro').modal('show');
-            cargarUbigeo(trabajador);
-        },
-        error: function () {
-            alert("No se pudo obtener los datos del trabajador.");
-        }
-    });
-});
-
-$(document).on('click', '.btnEliminar', function () {
-    idTrabajadorEliminar = $(this).data('id');
-    $('#modalEliminar').modal('show');
-});
-
+/* Funciones del la bandeja principal */
 const cargarTrabajadores = function (page = 1) {
     const nombre = $('#filtroNombre').val() ?? "";
     const sexo = $('#filtroSexo').val() ?? "";
@@ -64,9 +21,10 @@ const cargarTrabajadores = function (page = 1) {
             if (respuesta.trabajadores.length === 0) {
                 tbody.append('<tr><td colspan="9" class="text-center">No se encontraron trabajadores.</td></tr>');
             } else {
-                $.each(respuesta.trabajadores, function (i, t) {
+                $.each(respuesta.trabajadores, function (i,t) {
+                    let color = t.sexo === "M" ? "tr-masculino" : "tr-femenino";
                     const row = `
-                        <tr>
+                        <tr class="${color}">
                             <td>${t.fila}</td>
                             <td>${t.tipoDocumento}</td>
                             <td>${t.nroDocumento}</td>
@@ -107,7 +65,6 @@ const cargarTrabajadores = function (page = 1) {
                 const nuevaPagina = parseInt($(this).data('page'));
                 cargarTrabajadores(nuevaPagina);
             });
-
         },
         error: function (xhr, status, error) {
             console.error("Error AJAX:", error);
@@ -123,7 +80,50 @@ const limpiarFiltro = function () {
 
     cargarTrabajadores(1);
 }
+/* Fin: Funciones del la bandeja principal */
 
+/* Accion de los botones de la bandeja principal */
+$("#btnBuscar").on("click", function () {
+    cargarTrabajadores(1);
+});
+
+$("#btnLimpiar").on("click", function () {
+    limpiarFiltro();
+});
+
+$(document).on("click", ".btnEditar", function () {
+    const id = $(this).data("id");
+
+    $.ajax({
+        url: `/api/trabajadorapi/obtener/${id}`,
+        type: "GET",
+        success: function (trabajador) {
+            limpiarModalRegistro();
+
+            $('#txtNombres').val(trabajador.nombres);
+            $('#txtNumeroDoc').val(trabajador.numeroDocumento);
+            $('#txtTipoDoc').val(trabajador.tipoDocumento);
+            $('input[name="sexo"][value="' + trabajador.sexo + '"]').prop("checked", true);
+            $('#hdnIdTrabajador').val(trabajador.id);
+
+            $('#modalRegistroLabel').html('<i class="fa fa-pencil"></i> Editar Trabajador');
+            $('#modalRegistro').modal('show');
+            cargarUbigeo(trabajador);
+        },
+        error: function () {
+            alert("No se pudo obtener los datos del trabajador.");
+        }
+    });
+});
+
+$(document).on('click', '.btnEliminar', function () {
+    idTrabajadorEliminar = $(this).data('id');
+    $('#modalEliminar').modal('show');
+});
+
+/* Fin: Accion de los botones de la bandeja principal */
+
+/* Funciones del registro/edición */
 const limpiarModalRegistro = function () {
     $('#txtNombres').val("");
     $('#txtNumeroDoc').val("");
@@ -134,8 +134,6 @@ const limpiarModalRegistro = function () {
     $('input[name="sexo"][value="M"]').prop("checked", true);
     $('#hdnIdTrabajador').val("");
 }
-
-// Funciones de Ubigeo
 
 const cargarUbigeo = async function (trabajador) {
     await cargarDepartamentos();
@@ -179,6 +177,36 @@ const cargarDistrito = function (idProvincia) {
     });
 }
 
+const validarDatos = function (trabajadores) {
+    debugger
+    if (trabajadores.tipoDocumento == null || trabajadores.tipoDocumento == '') {
+        alert("Debe elegir un tipo de documento antes de continuar.");
+        return false;
+    }
+
+    if (trabajadores.numeroDocumento.length < 8) {
+        alert("Debe colocar un número de documento valido antes de continuar.");
+        return false;
+    }
+
+    if (trabajadores.idDepartamento == '' || trabajadores.idDepartamento == null) {
+        alert("Debe seleccionar un departamento antes de continuar.");
+        return false;
+    }
+
+    if (trabajadores.idProvincia == '' || trabajadores.idProvincia == null) {
+        alert("Debe seleccionar una provincia antes de continuar.");
+        return false;
+    }
+
+    if (trabajadores.idDistrito == '' || trabajadores.idDistrito == null) {
+        alert("Debe seleccionar un distrito antes de continuar.");
+        return false;
+    }
+
+    return true;
+}
+
 $('#txtDepartamento').on('change', function () {
     const idDep = $(this).val();
 
@@ -200,10 +228,15 @@ $('#txtProvincia').on('change', function () {
     }
 });
 
-//Funciones modal registro
+$("#btnRegistrar").on("click", function () {
+    $('#hdnIdTrabajador').val("");
+    limpiarModalRegistro();
+    cargarDepartamentos();
+    $('#modalRegistroLabel').html('<i class="fa fa-user-plus"></i> Nuevo Registro');
+    $('#modalRegistro').modal('show');
+});
 
 $('#btnGuardar').on('click', function () {
-    debugger
     const data = {
         id: $('#hdnIdTrabajador').val() || 0,
         tipoDocumento: $('#txtTipoDoc').val(),
@@ -215,26 +248,31 @@ $('#btnGuardar').on('click', function () {
         idDistrito: $('#txtDistrito').val()
     };
 
-    $.ajax({
-        url: '/api/trabajadorapi/guardar',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (res) {
-            $('#modalRegistro').modal('hide');
-            alert(res.mensaje);
-            cargarTrabajadores();
-        },
-        error: function (xhr) {
-            alert("Error al guardar: " + xhr.responseJSON?.mensaje || "Error desconocido");
-        }
-    });
+    if (validarDatos(data)) {
+        $.ajax({
+            url: '/api/trabajadorapi/guardar',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (res) {
+                $('#modalRegistro').modal('hide');
+                alert(res.mensaje);
+                cargarTrabajadores();
+            },
+            error: function (xhr) {
+                alert("Error al guardar: " + xhr.responseJSON?.mensaje || "Error desconocido");
+            }
+        });
+    }
 });
 
-$('#btnCerrarModal').on('click', function () {
+$(document).on('click', '.btnCerrarModal', function () {
     $('#modalRegistro').modal('hide');
 });
 
+/* Fin: Funciones del registro/edición */
+
+/* Funciones del modal de eliminación */
 $('#btnConfirmarEliminar').on('click', function () {
     $.ajax({
         url: `/api/trabajadorapi/eliminar/${idTrabajadorEliminar}`,
@@ -250,6 +288,7 @@ $('#btnConfirmarEliminar').on('click', function () {
     });
 });
 
-$('#CancelarEliminar').on('click', function () {
-    $('#modalRegistro').modal('hide');
+$(document).on('click', '.cancelarEliminar', function () {
+    $('#modalEliminar').modal('hide');
 });
+/* Fin: Funciones del modal de eliminación */
