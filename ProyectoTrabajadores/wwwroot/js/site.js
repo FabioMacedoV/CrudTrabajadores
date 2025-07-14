@@ -1,4 +1,5 @@
-﻿window.onload = function () {
+﻿let idTrabajadorEliminar = 0;
+window.onload = function () {
     cargarTrabajadores();
 }
 
@@ -24,7 +25,8 @@ $(document).on("click", ".btnEditar", function () {
         url: `/api/trabajadorapi/obtener/${id}`,
         type: "GET",
         success: function (trabajador) {
-            // Aquí llenas tu formulario con los datos que trae el SP
+            limpiarModalRegistro();
+
             $('#txtNombres').val(trabajador.nombres);
             $('#txtNumeroDoc').val(trabajador.numeroDocumento);
             $('#txtTipoDoc').val(trabajador.tipoDocumento);
@@ -40,8 +42,9 @@ $(document).on("click", ".btnEditar", function () {
     });
 });
 
-$(document).on("click", ".btnEliminar", function () {
-    $("#modalEliminar").modal("show");
+$(document).on('click', '.btnEliminar', function () {
+    idTrabajadorEliminar = $(this).data('id');
+    $('#modalEliminar').modal('show');
 });
 
 const cargarTrabajadores = function (page = 1) {
@@ -195,4 +198,58 @@ $('#txtProvincia').on('change', function () {
     if (idProv) {
         cargarDistrito(idProv);
     }
+});
+
+//Funciones modal registro
+
+$('#btnGuardar').on('click', function () {
+    debugger
+    const data = {
+        id: $('#hdnIdTrabajador').val() || 0,
+        tipoDocumento: $('#txtTipoDoc').val(),
+        numeroDocumento: $('#txtNumeroDoc').val(),
+        nombres: $('#txtNombres').val(),
+        sexo: $('input[name="sexo"]:checked').val(),
+        idDepartamento: $('#txtDepartamento').val(),
+        idProvincia: $('#txtProvincia').val(),
+        idDistrito: $('#txtDistrito').val()
+    };
+
+    $.ajax({
+        url: '/api/trabajadorapi/guardar',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (res) {
+            $('#modalRegistro').modal('hide');
+            alert(res.mensaje);
+            cargarTrabajadores();
+        },
+        error: function (xhr) {
+            alert("Error al guardar: " + xhr.responseJSON?.mensaje || "Error desconocido");
+        }
+    });
+});
+
+$('#btnCerrarModal').on('click', function () {
+    $('#modalRegistro').modal('hide');
+});
+
+$('#btnConfirmarEliminar').on('click', function () {
+    $.ajax({
+        url: `/api/trabajadorapi/eliminar/${idTrabajadorEliminar}`,
+        type: 'DELETE',
+        success: function (res) {
+            $('#modalEliminar').modal('hide');
+            alert(res.mensaje);
+            cargarTrabajadores(1);
+        },
+        error: function (xhr) {
+            alert("Error al eliminar: " + xhr.responseJSON?.mensaje || "Error desconocido");
+        }
+    });
+});
+
+$('#CancelarEliminar').on('click', function () {
+    $('#modalRegistro').modal('hide');
 });

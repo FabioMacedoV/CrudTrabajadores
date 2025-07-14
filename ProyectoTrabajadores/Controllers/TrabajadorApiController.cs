@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoTrabajadores.Data;
+using ProyectoTrabajadores.Models;
 using System;
 
 namespace ProyectoTrabajadores.Controllers
@@ -62,6 +63,34 @@ namespace ProyectoTrabajadores.Controllers
                 return NotFound();
 
             return Ok(trabajador);
+        }
+
+        [HttpPost("guardar")]
+        public async Task<IActionResult> Guardar([FromBody] Trabajadores modelo)
+        {
+            try
+            {
+                await _context.EjecutarSP_AddUpdTrabajadorAsync(modelo);
+                return Ok(new { mensaje = "Guardado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = "Error al guardar", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("eliminar/{id}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            try
+            {
+                await _context.EliminarTrabajadorAsync(id);
+                return Ok(new { mensaje = "Trabajador eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = "Error al eliminar", error = ex.Message });
+            }
         }
     }
 }

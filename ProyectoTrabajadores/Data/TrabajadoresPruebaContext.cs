@@ -124,7 +124,7 @@ public partial class TrabajadoresPruebaContext : DbContext
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
     public async Task<List<TrabajadorResponse>> ObtenerTrabajadoresSPAsync(string nombres, string sexo, string numDocumento, int rows, int page)
-    {
+    {   
         var pNombres = new SqlParameter("@Nombres", nombres ?? "");
         var pSexo = new SqlParameter("@sexo", sexo ?? "");
         var pNumDoc = new SqlParameter("@NumDocumento", numDocumento ?? "");
@@ -135,5 +135,24 @@ public partial class TrabajadoresPruebaContext : DbContext
             .FromSqlRaw("EXEC SP_ObtenerTrabajadores @Nombres, @sexo, @NumDocumento, @rows, @page",
                 pNombres, pSexo, pNumDoc, pRows, pPage)
             .ToListAsync();
+    }
+
+    public async Task EjecutarSP_AddUpdTrabajadorAsync(Trabajadores t)
+    {
+        await Database.ExecuteSqlRawAsync("EXEC SP_AddUpdTrabajador @p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7",
+            t.Id,
+            t.TipoDocumento,
+            t.NumeroDocumento,
+            t.Nombres,
+            t.Sexo,
+            t.IdDepartamento,
+            t.IdProvincia,
+            t.IdDistrito
+        );
+    }
+
+    public async Task EliminarTrabajadorAsync(int id)
+    {
+        await Database.ExecuteSqlRawAsync("EXEC SP_EliminarTrabajador @p0", id);
     }
 }
