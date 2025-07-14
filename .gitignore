@@ -1,28 +1,55 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
+## Archivos de compilación
+bin/
+obj/
+out/
+*.log
 
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+## Archivos del usuario de Visual Studio
+.vs/
+*.user
+*.suo
 
-# Environment files
-/.env
+## Publicaciones temporales
+publish/
+*.dbmdl
+*.pdb
 
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
+## Archivos generados por paquetes de NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
 
-# TypeScript cache
-*.tsbuildinfo
+## Configuración global de Rider/VSCode (opcional)
+.idea/
+.vscode/
+*.code-workspace
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+## Sistema operativo
+.DS_Store
+Thumbs.db
+
+## Archivos de seguridad y claves
+secrets.json
+
+## Configuración temporal
+*.tmp
+*.bak
+
+## Archivos de test
+TestResults/
+*.coverage
+*.coveragexml
+
+## Otros archivos innecesarios
+_ReSharper*/
+*.orig
+*.userosscache
+*.sln.docstates
+
+## LibMan
+libman.json
+wwwroot/lib/
+
+## Archivos de entorno
+.env

@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Crud Trabajadores";
+}
+
+<div class="container mt-4">
+
+
+    <h1 class="mb-0">Listado de Trabajadores</h1>
+
+    <div class="container mt-3">
+        <div class="card">
+            <div class="card-header bg-light">
+                <strong><i class="fa fa-filter"></i> Filtros de búsqueda</strong>
+            </div>
+            <div class="card-body">
+
+                <form id="formFiltro">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="filtroNombre">Nombres</label>
+                            <input type="text" class="form-control" id="filtroNombre" placeholder="Ingrese nombres">
+                        </div>
+                        <div class="col-4">
+                            <label for="filtroDoc">Número de Documento</label>
+                            <input type="text" class="form-control" id="filtroDoc" placeholder="Ingrese número de documento">
+                        </div>
+                        <div class="col-4">
+                            <label for="filtroSexo">Sexo</label>
+                            <select class="form-control" id="filtroSexo">
+                                <option value="">-- Todos --</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row p-2">
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="button" class="btn btn-primary mr-2" id="btnBuscar">
+                                <i class="fa fa-search"></i> Buscar
+                            </button>&nbsp;&nbsp;
+                            <button type="button" class="btn btn-secondary" id="btnLimpiar">
+                                <i class="fa fa-eraser"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3 p-2">
+        <button class="btn btn-primary" data-toggle="modal" id="btnRegistrar">
+            <i class="fa fa-plus"></i> Nuevo Registro
+        </button>
+    </div>
+
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
+            <tr>
+                <th>Tipo Documento</th>
+                <th>Nro Documento</th>
+                <th>Nombres</th>
+                <th>Sexo</th>
+                <th>Departamento</th>
+                <th>Provincia</th>
+                <th>Distrito</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* Aquí iría el bucle @foreach (var t in Model) *@
+            <tr>
+                <td>DNI</td>
+                <td>15988373</td>
+                <td>FRANCI RENE ROMERO ALZAMORA</td>
+                <td>M</td>
+                <td>Lima</td>
+                <td>Lima</td>
+                <td>Lima</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" id="btnEditar">
+                        <i class="fa fa-pencil"></i> Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm" id="btnEliminar">
+                        <i class="fa fa-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    @Html.Partial("ModalRegistro")
+    @Html.Partial("ModalEliminacion")
+</div>
