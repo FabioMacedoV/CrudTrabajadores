@@ -3,15 +3,10 @@
 }
 
 $("#btnRegistrar").on("click", function () {
-    $("#modalRegistro").modal("show")
-});-
-
-$("#btnEditar").on("click", function () {
-    $("#modalRegistro").modal("show")
-});
-
-$("#btnEliminar").on("click", function () {
-    $("#modalEliminar").modal("show");
+    $('#hdnIdTrabajador').val("");
+    limpiarModalRegistro();
+    cargarDepartamentos();
+    $('#modalRegistro').modal('show');
 });
 
 $("#btnBuscar").on("click", function () {
@@ -20,6 +15,33 @@ $("#btnBuscar").on("click", function () {
 
 $("#btnLimpiar").on("click", function () {
     limpiarFiltro();
+});
+
+$(document).on("click", ".btnEditar", function () {
+    const id = $(this).data("id");
+
+    $.ajax({
+        url: `/api/trabajadorapi/obtener/${id}`,
+        type: "GET",
+        success: function (trabajador) {
+            // Aquí llenas tu formulario con los datos que trae el SP
+            $('#txtNombres').val(trabajador.nombres);
+            $('#txtNumeroDoc').val(trabajador.numeroDocumento);
+            $('#txtTipoDoc').val(trabajador.tipoDocumento);
+            $('input[name="sexo"][value="' + trabajador.sexo + '"]').prop("checked", true);
+            $('#hdnIdTrabajador').val(trabajador.id);
+
+            $('#modalRegistro').modal('show');
+            cargarUbigeo(trabajador);
+        },
+        error: function () {
+            alert("No se pudo obtener los datos del trabajador.");
+        }
+    });
+});
+
+$(document).on("click", ".btnEliminar", function () {
+    $("#modalEliminar").modal("show");
 });
 
 const cargarTrabajadores = function (page = 1) {
@@ -98,3 +120,79 @@ const limpiarFiltro = function () {
 
     cargarTrabajadores(1);
 }
+
+const limpiarModalRegistro = function () {
+    $('#txtNombres').val("");
+    $('#txtNumeroDoc').val("");
+    $('#txtTipoDoc').val("");
+    $('#txtDepartamento').val("");
+    $('#txtProvincia').val("");
+    $('#txtDistrito').val("");
+    $('input[name="sexo"][value="M"]').prop("checked", true);
+    $('#hdnIdTrabajador').val("");
+}
+
+// Funciones de Ubigeo
+
+const cargarUbigeo = async function (trabajador) {
+    await cargarDepartamentos();
+    await cargarProvincia(trabajador.idDepartamento);
+    await cargarDistrito(trabajador.idProvincia);
+
+    $('#txtDepartamento').val(trabajador.idDepartamento);
+    $('#txtProvincia').val(trabajador.idProvincia);
+    $('#txtDistrito').val(trabajador.idDistrito);
+};
+const cargarDepartamentos = function () {
+    $.get('/api/ubigeo/departamentos', function (data) {
+        $('#txtDepartamento').empty().append('<option value="">-- Seleccione --</option>');
+        data.forEach(dep => {
+            $('#txtDepartamento').append(`<option value="${dep.id}">${dep.nombre}</option>`);
+        });
+
+        // Deshabilitar provincia y distrito
+        $('#txtProvincia').empty().append('<option value="">-- Seleccione --</option>').prop('disabled', true);
+        $('#txtDistrito').empty().append('<option value="">-- Seleccione --</option>').prop('disabled', true);
+    });
+}
+
+const cargarProvincia = function (idDepartamento) {
+    return $.get(`/api/ubigeo/provincias/${idDepartamento}`, function (data) {
+        $('#txtProvincia').empty().append('<option value="">-- Seleccione --</option>');
+        data.forEach(prov => {
+            $('#txtProvincia').append(`<option value="${prov.id}">${prov.nombre}</option>`);
+        });
+        $('#txtProvincia').prop('disabled', false);
+    });
+}
+
+const cargarDistrito = function (idProvincia) {
+    return $.get(`/api/ubigeo/distritos/${idProvincia}`, function (data) {
+        $('#txtDistrito').empty().append('<option value="">-- Seleccione --</option>');
+        data.forEach(dist => {
+            $('#txtDistrito').append(`<option value="${dist.id}">${dist.nombre}</option>`);
+        });
+        $('#txtDistrito').prop('disabled', false);
+    });
+}
+
+$('#txtDepartamento').on('change', function () {
+    const idDep = $(this).val();
+
+    $('#txtProvincia').empty().append('<option value="">-- Seleccione --</option>').prop('disabled', true);
+    $('#txtDistrito').empty().append('<option value="">-- Seleccione --</option>').prop('disabled', true);
+
+    if (idDep) {
+        cargarProvincia(idDep);
+    }
+});
+
+$('#txtProvincia').on('change', function () {
+    const idProv = $(this).val();
+
+    $('#txtDistrito').empty().append('<option value="">-- Seleccione --</option>').prop('disabled', true);
+
+    if (idProv) {
+        cargarDistrito(idProv);
+    }
+});

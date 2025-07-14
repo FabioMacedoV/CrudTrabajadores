@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProyectoTrabajadores.Data;
 using System;
 
@@ -37,6 +38,30 @@ namespace ProyectoTrabajadores.Controllers
                 totalPaginas = totalPaginas,
                 totalRegistros = total
             });
+        }
+
+        [HttpGet("obtener/{id}")]
+        public async Task<IActionResult> ObtenerPorId(int id)
+        {
+            var trabajador = await _context.Trabajadores
+                .Where(t => t.Id == id && t.Estado == true)
+                .Select(t => new
+                {
+                    t.Id,
+                    t.TipoDocumento,
+                    t.NumeroDocumento,
+                    t.Nombres,
+                    t.Sexo,
+                    t.IdDepartamento,
+                    t.IdProvincia,
+                    t.IdDistrito
+                })
+                .FirstOrDefaultAsync();
+
+            if (trabajador == null)
+                return NotFound();
+
+            return Ok(trabajador);
         }
     }
 }
