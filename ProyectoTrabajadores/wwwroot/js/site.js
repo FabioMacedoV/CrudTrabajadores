@@ -14,97 +14,87 @@ $("#btnEliminar").on("click", function () {
     $("#modalEliminar").modal("show");
 });
 
+$("#btnBuscar").on("click", function () {
+    cargarTrabajadores(1);
+});
+
 $("#btnLimpiar").on("click", function () {
     limpiarFiltro();
 });
 
-const cargarTrabajadores = function () {
+const cargarTrabajadores = function (page = 1) {
+    const nombre = $('#filtroNombre').val() ?? "";
+    const sexo = $('#filtroSexo').val() ?? "";
+    const dni = $('#filtroDoc').val() ?? "";
 
+    const params = new URLSearchParams({ nombre, sexo, dni, page });
+
+    $.ajax({
+        url: `/api/trabajadorapi/listar?${params.toString()}`,
+        type: "GET",
+        success: function (respuesta) {
+            const tbody = $('#tablaTrabajadores tbody');
+            tbody.empty();
+
+            if (respuesta.trabajadores.length === 0) {
+                tbody.append('<tr><td colspan="9" class="text-center">No se encontraron trabajadores.</td></tr>');
+            } else {
+                $.each(respuesta.trabajadores, function (i, t) {
+                    const row = `
+                        <tr>
+                            <td>${t.fila}</td>
+                            <td>${t.tipoDocumento}</td>
+                            <td>${t.nroDocumento}</td>
+                            <td>${t.nombres}</td>
+                            <td>${t.sexo}</td>
+                            <td>${t.departamento}</td>
+                            <td>${t.provincia}</td>
+                            <td>${t.distrito}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm btnEditar" data-id="${t.id}">
+                                    <i class="fa fa-pencil"></i> Editar
+                                </button>
+                                <button class="btn btn-danger btn-sm btnEliminar" data-id="${t.id}">
+                                    <i class="fa fa-trash"></i> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+
+            // Paginación dinámica
+            const paginador = $('#paginador');
+            paginador.empty();
+
+            for (let i = 1; i <= respuesta.totalPaginas; i++) {
+                const active = (i === respuesta.paginaActual) ? "active" : "";
+                paginador.append(`
+                    <li class="page-item ${active}">
+                        <a href="#" class="page-link" data-page="${i}">${i}</a>
+                    </li>
+                `);
+            }
+
+            $('#paginador .page-link').on('click', function (e) {
+                e.preventDefault();
+                const nuevaPagina = parseInt($(this).data('page'));
+                cargarTrabajadores(nuevaPagina);
+            });
+
+        },
+        error: function (xhr, status, error) {
+            console.error("Error AJAX:", error);
+            $('#tablaTrabajadores tbody').html('<tr><td colspan="9" class="text-danger text-center">Ocurrió un error al buscar trabajadores.</td></tr>');
+        }
+    });
 };
 
 const limpiarFiltro = function () {
     $("#filtroNombre").val("");
     $("#filtroDoc").val("");
     $("#filtroSexo").val("");
+
+    cargarTrabajadores(1);
 }
-
-//$(document).ready(function () {
-//    $(".btn-editar").on("click", function () {
-//        const btn = $(this);
-
-//        $("#formTrabajador #nombres").val(btn.data("nombres"));
-//        $("#formTrabajador #apellidos").val(btn.data("apellidos"));
-//        $("#formTrabajador #dni").val(btn.data("dni"));
-//        $("#formTrabajador #direccion").val(btn.data("direccion"));
-//        $("#formTrabajador #sexo").val(btn.data("sexo"));
-
-//        $("#formTrabajador").data("modo", "editar");
-//        $("#formTrabajador").data("id", btn.data("id"));
-
-//        const codDistrito = btn.data("ubigeo");
-//        $("#distrito").val(codDistrito);
-
-//        // Cambiar título
-//        $("#modalRegistroLabel").html("<i class="fa fa-pencil"></i> Editar Trabajador");
-
-//        // Mostrar modal
-//        $("#modalRegistro").modal("show");
-//    });
-
-//    // CLICK en "Eliminar"
-//    $(".btn-eliminar").on("click", function () {
-//        const btn = $(this);
-//        const id = btn.data("id");
-//        const nombre = btn.data("nombre");
-
-//        // Mostrar nombre en el mensaje
-//        $("#mensajeEliminar").text(`¿Estás seguro de que deseas eliminar a ${nombre}?`);
-
-//        // Guardar ID en botón de confirmar
-//        $("#confirmarEliminar").data("id", id);
-
-//        // Mostrar modal
-//        $("#modalEliminar").modal("show");
-//    });
-
-//    // Confirmar eliminación
-//    $("#confirmarEliminar").on("click", function () {
-//        const id = $(this).data("id");
-
-//        // Aquí haces la llamada a tu API o backend
-//        console.log("Eliminar trabajador ID:", id);
-
-//        // Cierra modal
-//        $("#modalEliminar").modal("hide");
-
-//        // Luego refrescas la tabla o recargas
-//    });
-
-//    // Enviar formulario
-//    $("#formTrabajador").on("submit", function (e) {
-//        e.preventDefault();
-
-//        const modo = $(this).data("modo") || "nuevo";
-//        const id = $(this).data("id") || 0;
-
-//        const datos = {
-//            id,
-//            nombres: $("#nombres").val(),
-//            apellidos: $("#apellidos").val(),
-//            dni: $("#dni").val(),
-//            direccion: $("#direccion").val(),
-//            sexo: $("#sexo").val(),
-//            codDistrito: $("#distrito").val()
-//        };
-
-//        if (modo === "editar") {
-//            console.log("Actualizar:", datos);
-//            // Llamar API PUT
-//        } else {
-//            console.log("Registrar:", datos);
-//            // Llamar API POST
-//        }
-
-//        $("#modalRegistro").modal("hide");
-//    });
-//});

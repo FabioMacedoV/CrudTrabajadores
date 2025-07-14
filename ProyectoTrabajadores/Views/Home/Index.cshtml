@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Crud Trabajadores";
+    ViewData["Title"] = "Inicio";
 }
 
 <div class="container mt-4">
@@ -56,9 +56,10 @@
         </button>
     </div>
 
-    <table class="table table-bordered text-center">
+    <table class="table table-bordered text-center" id="tablaTrabajadores">
         <thead class="thead-light">
             <tr>
+                <th>N°</th>
                 <th>Tipo Documento</th>
                 <th>Nro Documento</th>
                 <th>Nombres</th>
@@ -70,27 +71,12 @@
             </tr>
         </thead>
         <tbody>
-            @* Aquí iría el bucle @foreach (var t in Model) *@
-            <tr>
-                <td>DNI</td>
-                <td>15988373</td>
-                <td>FRANCI RENE ROMERO ALZAMORA</td>
-                <td>M</td>
-                <td>Lima</td>
-                <td>Lima</td>
-                <td>Lima</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" id="btnEditar">
-                        <i class="fa fa-pencil"></i> Editar
-                    </button>
-
-                    <button class="btn btn-danger btn-sm" id="btnEliminar">
-                        <i class="fa fa-trash"></i> Eliminar
-                    </button>
-                </td>
-            </tr>
         </tbody>
     </table>
+
+    <nav>
+        <ul id="paginador" class="pagination justify-content-center"></ul>
+    </nav>
 
     @Html.Partial("ModalRegistro")
     @Html.Partial("ModalEliminacion")

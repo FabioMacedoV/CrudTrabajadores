@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace ProyectoTrabajadores.Models;
+
+public partial class Provincia
+{
+    public int Id { get; set; }
+
+    public int? IdDepartamento { get; set; }
+
+    public string? NombreProvincia { get; set; }
+
+    public virtual ICollection<Distrito> Distritos { get; set; } = new List<Distrito>();
+
+    public virtual Departamento? IdDepartamentoNavigation { get; set; }
+}

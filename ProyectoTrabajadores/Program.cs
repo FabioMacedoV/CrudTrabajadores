@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ProyectoTrabajadores.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<TrabajadoresPruebaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexionPrincipal")));
 
 builder.Services.AddControllersWithViews();
